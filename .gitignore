@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.py[cod]
+.env
+015.jpeg
+Screenshot\ 2026-10-22\ 141900.png

@@ -1,0 +1,308 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b1224">
+    <title>OralVision AI | Research Lab</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', path='/css/style.css') }}">
+</head>
+<body>
+<header class="navbar">
+    <a class="brand" href="/">
+        <span class="brand-icon">✳</span>
+        <span>OralVision <em>AI</em>
+            <small>COMPUTER VISION LAB</small>
+        </span>
+    </a>
+    <div class="nav-right">
+        <span id="health-dot" class="dot"></span>
+        <span id="health-text">Checking model...</span>
+        <a href="/docs" target="_blank">API Docs ↗</a>
+    </div>
+</header>
+
+<main class="container">
+    <section class="hero">
+        <div class="hero-copy">
+            <span class="eyebrow">SWIN TRANSFORMER · AI RESEARCH</span>
+            <h1>Explore oral images<br>with <span>AI vision.</span></h1>
+            <p>
+                An experimental image-classification interface powered
+                by a fine-tuned Swin Transformer.
+            </p>
+            <div class="pills">
+                <span>✦ Transfer learning</span>
+                <span>◈ Computer vision</span>
+                <span>⌁ Real-time inference</span>
+            </div>
+        </div>
+
+        <div class="hero-art" aria-hidden="true">
+            <div class="orbit orbit-one"></div>
+            <div class="orbit orbit-two"></div>
+            <div class="brain-card">
+                <svg viewBox="0 0 120 120">
+                    <defs>
+                        <linearGradient id="glow">
+                            <stop stop-color="#83ead9"/>
+                            <stop offset="1" stop-color="#a49aff"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M60 17C44 2 24 15 27 35C10 41 15 62 29 70
+                    C25 88 42 100 55 89V53C55 44 65 44 65 53V89
+                    C78 100 95 88 91 70C105 62 110 41 93 35
+                    C96 15 76 2 60 17Z"
+                    fill="url(#glow)" opacity=".92"/>
+                    <path d="M60 22V91M37 34Q48 31 55 43M83 34Q72 31 65 43
+                    M33 57Q45 53 55 62M87 57Q75 53 65 62"
+                    stroke="#14223e" stroke-width="3"
+                    stroke-linecap="round" fill="none"/>
+                </svg>
+            </div>
+            <div class="floating-card top-card">MODEL STATUS <b>● AI Research</b></div>
+            <div class="floating-card bottom-card">INPUT SIZE <b>224 × 224 PX</b></div>
+        </div>
+    </section>
+
+    <section class="section-heading">
+        <div>
+            <span class="eyebrow">IMAGE WORKSPACE</span>
+            <h2>Analyze an image</h2>
+            <p>Upload an image to inspect the model's experimental output.</p>
+        </div>
+        <span class="tag">01 UPLOAD → 02 RESULTS</span>
+    </section>
+
+    <section class="grid">
+        <article class="panel">
+            <div class="panel-heading">
+                <div class="panel-symbol">↥</div>
+                <div>
+                    <h3>Upload image</h3>
+                    <p>JPG, PNG, WEBP or BMP · Max 8 MB</p>
+                </div>
+            </div>
+
+            <div id="dropzone" class="dropzone" tabindex="0"
+                 role="button" aria-label="Choose or drop an image">
+                <input id="image-input" type="file"
+                       accept="image/jpeg,image/png,image/webp,image/bmp"
+                       hidden>
+                <div class="upload-icon">↑</div>
+                <h3>Drop your image here</h3>
+                <p>or <span>browse files</span> from your device</p>
+                <div class="file-types">
+                    <span>JPG</span><span>PNG</span>
+                    <span>WEBP</span><span>MAX 8 MB</span>
+                </div>
+            </div>
+
+            <div id="preview-wrap" class="preview-wrap hidden">
+                <div class="preview-head">
+                    <span>IMAGE PREVIEW</span>
+                    <button id="remove-image" class="text-button"
+                            type="button">Remove ×</button>
+                </div>
+                <img id="preview" alt="Selected image preview">
+                <p id="file-info" class="muted"></p>
+            </div>
+
+            <button id="analyze" class="primary-button" disabled>
+                <span id="button-text">Analyze image</span>
+                <span>↗</span>
+            </button>
+            <p class="privacy">◉ Images are processed in memory by this demo.</p>
+        </article>
+
+        <article class="panel result-panel" aria-live="polite">
+            <div class="panel-heading">
+                <div class="panel-symbol purple">◈</div>
+                <div>
+                    <h3>Analysis results</h3>
+                    <p>Experimental model output</p>
+                </div>
+                <span id="result-status" class="status-label">WAITING</span>
+            </div>
+
+            <div id="empty-state" class="empty-state">
+                <div class="scan">
+                    <span class="scan-ring"></span>
+                    <span class="scan-cross">＋</span>
+                </div>
+                <h3>Ready when you are</h3>
+                <p>Upload an image and run the model to see its predicted
+                   category and score.</p>
+                <div class="steps">01 Add image <i>·</i>
+                    02 Run model <i>·</i> 03 Review output</div>
+            </div>
+
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <h3>Analyzing image<span class="dots">...</span></h3>
+                <p>Running Swin Transformer inference</p>
+            </div>
+
+            <div id="results" class="results hidden">
+                <span class="eyebrow">PREDICTED CATEGORY</span>
+                <h2 id="prediction">—</h2>
+                <p id="prediction-caption" class="muted"></p>
+
+                <div class="confidence-head">
+                    <span>Model score</span>
+                    <strong id="confidence">—</strong>
+                </div>
+                <div class="progress">
+                    <div id="confidence-bar"></div>
+                </div>
+
+                <div class="score-grid">
+                    <div><span class="c-dot"></span>
+                        Cancer <b id="cancer-score">—</b></div>
+                    <div><span class="n-dot"></span>
+                        Non-Cancer <b id="normal-score">—</b></div>
+                </div>
+
+                <div class="warning">
+                    <b>ⓘ Research disclaimer</b>
+                    <p id="notice">Experimental output only, not a diagnosis.</p>
+                </div>
+            </div>
+
+            <div id="error-state" class="error-state hidden">
+                <span class="error-icon">!</span>
+                <h3>Analysis unavailable</h3>
+                <p id="error-message"></p>
+            </div>
+        </article>
+    </section>
+    
+<!-- Live Webcam Classification -->
+<section class="camera-card" id="cameraSection">
+    <div class="camera-heading">
+        <div>
+            <span class="camera-eyebrow">LIVE CAPTURE</span>
+            <h2>Capture with Webcam</h2>
+            <p>Take a still image and submit it for AI analysis.</p>
+        </div>
+        <span class="camera-icon">◎</span>
+    </div>
+
+    <div class="camera-stage" id="cameraStage">
+        <video id="cameraVideo" autoplay playsinline muted hidden></video>
+        <canvas id="cameraCanvas" hidden></canvas>
+
+        <div class="camera-placeholder" id="cameraPlaceholder">
+            <div class="camera-placeholder-icon">📷</div>
+            <h3>Your camera preview</h3>
+            <p>Start your camera to capture an image.</p>
+        </div>
+
+        <img id="capturedImage" alt="Captured oral cavity image" hidden>
+    </div>
+
+    <div class="camera-controls">
+        <button type="button" class="camera-btn camera-primary"
+                id="startCameraBtn">
+            Start Webcam
+        </button>
+
+        <button type="button" class="camera-btn"
+                id="capturePhotoBtn" disabled>
+            Capture Photo
+        </button>
+
+        <button type="button" class="camera-btn"
+                id="retakePhotoBtn" hidden>
+            Retake
+        </button>
+
+        <button type="button" class="camera-btn camera-analyze"
+                id="analyzePhotoBtn" disabled>
+            Analyze Image
+        </button>
+
+        <button type="button" class="camera-btn camera-stop"
+                id="stopCameraBtn" disabled>
+            Stop Camera
+        </button>
+    </div>
+
+    <p class="camera-status" id="cameraStatus" role="status"
+       aria-live="polite">
+        Camera is off. Select Start Webcam to begin.
+    </p>
+
+    <div class="camera-result" id="cameraResult" hidden aria-live="polite">
+        <h3 id="cameraPrediction"></h3>
+        <p>Model confidence: <strong id="cameraConfidence"></strong></p>
+        <div id="cameraScores"></div>
+        <p class="camera-disclaimer">
+            This experimental AI result is not a medical diagnosis.
+            Consult a qualified dental or medical professional about
+            suspicious oral lesions.
+        </p>
+    </div>
+</section>
+
+
+
+<section class="camera-card ip-camera-card" id="ipCameraSection">
+  <div class="camera-heading">
+    <div>
+      <span class="camera-eyebrow">MOBILE IP CAMERA</span>
+      <h2>Capture from your phone over Wi-Fi</h2>
+      <p>Use an Android IP-camera app that provides a <code>/shot.jpg</code> snapshot endpoint.</p>
+    </div>
+    <span class="camera-icon" aria-hidden="true">📱</span>
+  </div>
+  <div class="ip-camera-form">
+    <label for="mobileCameraHost">Phone IP address</label>
+    <input id="mobileCameraHost" type="text" inputmode="decimal" autocomplete="off"
+           placeholder="192.168.1.25" aria-describedby="ipCameraHelp">
+    <label for="mobileCameraPort">Camera app port</label>
+    <input id="mobileCameraPort" type="number" min="1" max="65535" value="8080">
+    <p id="ipCameraHelp" class="camera-status">Connect the phone and computer to the same Wi-Fi. Start the camera server in the phone app, then enter the IP shown by the app.</p>
+    <div class="camera-controls">
+      <button type="button" class="camera-btn camera-primary" id="captureMobileBtn">Capture from phone</button>
+      <button type="button" class="camera-btn camera-analyze" id="analyzeMobileBtn" disabled>Analyze captured image</button>
+    </div>
+  </div>
+  <div class="camera-stage ip-snapshot-stage">
+    <img id="mobileSnapshot" alt="Snapshot captured from mobile IP camera" hidden>
+    <div class="camera-placeholder" id="mobileCameraPlaceholder">
+      <div class="camera-placeholder-icon">📷</div>
+      <h3>No mobile snapshot yet</h3>
+      <p>Your photo will appear here for review before analysis.</p>
+    </div>
+  </div>
+  <p class="camera-status" id="mobileCameraStatus" role="status" aria-live="polite">Waiting for phone camera details.</p>
+  <div class="camera-result" id="mobileCameraResult" hidden aria-live="polite">
+    <h3 id="mobilePrediction"></h3>
+    <p>Model score: <strong id="mobileConfidence"></strong></p>
+    <div id="mobileScores"></div>
+    <p class="camera-disclaimer">Research prototype only—not a medical diagnosis. Seek assessment from a qualified dental or oral-health professional for concerning lesions.</p>
+  </div>
+</section>
+
+    <section class="disclaimer">
+        <span>✳</span>
+        <div>
+            <b>Educational research prototype — not a diagnostic tool</b>
+            <p>The model may make incorrect predictions. Its score is not
+            a calibrated disease probability and cannot confirm or rule out
+            cancer. Seek assessment from a qualified dental or oral-health
+            professional for any concerning lesion.</p>
+        </div>
+    </section>
+
+    <footer>
+        <span>OralVision AI · Research Prototype</span>
+        <span>FastAPI + PyTorch + Swin Transformer</span>
+    </footer>
+</main>
+<script src="{{ url_for('static', path='/js/app.js') }}" defer></script>
+</body>
+</html>
